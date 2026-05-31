@@ -5,7 +5,7 @@ require('dotenv').config();
 
 var app = express();
 
-var upload = multer({ dest: 'uploads/' });
+var upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -15,6 +15,10 @@ app.get('/', function (req, res) {
 });
 
 app.post('/api/fileanalyse', upload.single('upfile'), function (req, res) {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No file uploaded' });
+  }
+
   res.json({
     name: req.file.originalname,
     type: req.file.mimetype,
